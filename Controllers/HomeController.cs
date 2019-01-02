@@ -11,9 +11,10 @@ namespace Anagram_Tree.Controllers
         [HttpPost()]
         public async Task<IActionResult> Index(WordViewModel wordViewModel)
         {
-            if(wordViewModel.ConnectionString == null)
-                wordViewModel.ConnectionString = "Server=manny.db.elephantsql.com;Port=5432;Database=puoddiwe;User Id=puoddiwe;Password=48FoDgEzGZxZxQIQo3RPvbgJZLR-gdO7;";
-            var (data, stats) = await DatabaseScraper.Search(wordViewModel.BaseWord, wordViewModel.ConnectionString);
+            if(wordViewModel.BaseWord.Length > 12)
+                return Ok("Твърде дълга дума");
+            var conn = "Server=manny.db.elephantsql.com;Port=5432;Database=puoddiwe;User Id=puoddiwe;Password=48FoDgEzGZxZxQIQo3RPvbgJZLR-gdO7;";
+            var (data, stats) = await DatabaseScraper.Search(wordViewModel.BaseWord.ToLower(), conn);
             var connections = DatabaseScraper.Setup(ref data);
             stats += DatabaseScraper.PrintStatistics(data, connections);
             if(wordViewModel.RawData)

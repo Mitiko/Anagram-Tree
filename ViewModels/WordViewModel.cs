@@ -6,7 +6,6 @@ namespace Anagram_Tree.ViewModels
     {
         [Required]
         public string BaseWord { get; set; }
-        public string ConnectionString { get; set; }
         public bool RawData { get; set; }
     }
 }
