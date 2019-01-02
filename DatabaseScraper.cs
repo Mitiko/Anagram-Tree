@@ -13,14 +13,14 @@ namespace Anagram_Tree
         {
             #region Setup
             var alphabet = "абвгдежзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ-".ToList();
-            string stats = $"Alpabet letter count: {alphabet.Count}\n";
+            string stats = $"Alpabet letter count: {alphabet.Count}<br>";
             #endregion
 
             #region Query generation
             var _applicationContext = new ApplicationContext();
             var data = new List<List<Data>>();
             alphabet = alphabet.Where(c => !word.Contains(c)).ToList();
-            stats += $"Alphabet: {string.Join("", alphabet)}\n\n";
+            stats += $"Alphabet: {string.Join("", alphabet)}<br><br>";
             var sum = 0;
             #endregion
 
@@ -37,12 +37,12 @@ namespace Anagram_Tree
                     .Select(w => w.FirstOrDefault())
                     .ToListAsync();
 
-                stats += $"[results-{i}] {results.Count}\n";
+                stats += $"[results-{i}] {results.Count}<br>";
                 sum += results.Count(r => r.SanityCheck(word));
                 data.Add(results.Where(r => r.SanityCheck(word)).Select(r => r.ToData()).ToList());
             }
 
-            stats += $"TORAL WORD COUNT: {sum}\n";
+            stats += $"TORAL WORD COUNT: {sum}<br>";
             return (data, stats);
             #endregion
         }
@@ -52,10 +52,10 @@ namespace Anagram_Tree
             string result = "";
             for (int level = 2; level < data.Count; level++)
             {
-                result += $"------------------------------------------level {level} ------------------------------------------\n";
+                result += $"------------------------------------------level {level} ------------------------------------------<br>";
                 foreach (var d in data[level])
                 {
-                    result += $"(power: {d.Power}) {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})\n";
+                    result += $"(power: {d.Power}) {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})<br>";
                 }
             }
             return result;
@@ -88,9 +88,9 @@ namespace Anagram_Tree
                         result += $"{{ iFrom: {d.Level - 2}, jFrom: {j}, iTo: {next.Level - 2}, jTo: {jn} }}";
                         connCount++;
                         if(connCount == connections)
-                            result += "\n";
+                            result += "<br>";
                         else
-                            result += ",\n";
+                            result += ",<br>";
                     }
                 }
             }
@@ -105,21 +105,21 @@ namespace Anagram_Tree
                 var list = data[i];
 
                 if(list.Count > 0)
-                    result += "[\n";
+                    result += "[<br>";
 
                 for (int j = 0; j < list.Count; j++)
                 {
                     result += $"    {{ value: '{list[j].Power}-{list[j].Value}', xFrom: 0, yFrom: 0, xTo: 0, yTo: 0 }}";
                     if(j == list.Count - 1)
-                        result += "\n";
+                        result += "<br>";
                     else
-                        result += ",\n";
+                        result += ",<br>";
                 }
 
                 if(i != data.Count - 1 && list.Count > 0)
-                    result += "],\n";
+                    result += "],<br>";
                 else if(list.Count > 0)
-                    result += "]\n";
+                    result += "]<br>";
             }
             return result;
         }
@@ -152,23 +152,23 @@ namespace Anagram_Tree
             }
             averageConn /= count;
             averagePower /= count;
-            result += $"TOTAL CONNECTIONS COUNT: {connections}\n";
-            result += $"MAX CONNECTIONS: {maxConn}\n";
-            result += $"MIN CONNECTIONS: {minConn}\n";
-            result += $"AVERAGE CONNECTIONS: {averageConn}\n";
-            result += $"HIGHEST POWER: {highestPower}\n";
-            result += $"AVERAGE POWER: {averagePower}\n";
+            result += $"TOTAL CONNECTIONS COUNT: {connections}<br>";
+            result += $"MAX CONNECTIONS: {maxConn}<br>";
+            result += $"MIN CONNECTIONS: {minConn}<br>";
+            result += $"AVERAGE CONNECTIONS: {averageConn}<br>";
+            result += $"HIGHEST POWER: {highestPower}<br>";
+            result += $"AVERAGE POWER: {averagePower}<br>";
             bool minConnHasPassed = false;
             foreach (var list in data)
             {
                 foreach (var d in list)
                 {
                     if(d.LinksForward.Count == maxConn)
-                        result += $"Max connections word: {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})\n";
+                        result += $"Max connections word: {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})<br>";
 
                     if(d.LinksForward.Count == minConn && !minConnHasPassed)
                     {
-                        result += $"Min connections word: {d.Value}\n";
+                        result += $"Min connections word: {d.Value}<br>";
                         minConnHasPassed = true;
                     }
                 }

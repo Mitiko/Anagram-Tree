@@ -1,0 +1,11 @@
+@model WordViewModel
+
+<form asp-controller="Home" asp-action="Index" method="POST">
+    <label asp-for="BaseWord"></label>
+    <input asp-for="BaseWord" autocomplete="off"/>
+    <hr>
+    <label asp-for="RawData"></label>
+    <input asp-for="RawData" autocomplete="off"/>
+    <hr>
+    <button type="submit">Submit</button>
+</form>

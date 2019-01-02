@@ -1,6 +1,8 @@
 @model (string Stats, string Data, string Connections)
-@Model.Stats
+@Html.Raw(@Model.Stats)
 --------------------------
-@Model.Data
+@Html.Raw(@Model.Data)
 --------------------------
-@Model.Connections
+@Html.Raw(@Model.Connections)
+--------------------------
+<a asp-action="Index">Return to Home</a>
