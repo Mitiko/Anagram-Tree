@@ -88,9 +88,9 @@ namespace Anagram_Tree
                         result += $"{{ iFrom: {d.Level - 2}, jFrom: {j}, iTo: {next.Level - 2}, jTo: {jn} }}";
                         connCount++;
                         if(connCount == connections)
-                            result += "<br>";
+                            result += "";
                         else
-                            result += ",<br>";
+                            result += ",";
                     }
                 }
             }
@@ -105,21 +105,21 @@ namespace Anagram_Tree
                 var list = data[i];
 
                 if(list.Count > 0)
-                    result += "[<br>";
+                    result += "[";
 
                 for (int j = 0; j < list.Count; j++)
                 {
                     result += $"    {{ value: '{list[j].Power}-{list[j].Value}', xFrom: 0, yFrom: 0, xTo: 0, yTo: 0 }}";
                     if(j == list.Count - 1)
-                        result += "<br>";
+                        result += "";
                     else
-                        result += ",<br>";
+                        result += ",";
                 }
 
                 if(i != data.Count - 1 && list.Count > 0)
-                    result += "],<br>";
+                    result += "],";
                 else if(list.Count > 0)
-                    result += "]<br>";
+                    result += "]";
             }
             return result;
         }
@@ -181,9 +181,9 @@ namespace Anagram_Tree
             for (int i = 0; i < data.Count; i++)
             {
                 data[i] = data[i]
-                    .OrderBy(d => d.Power)
-                    .ThenBy (d => d.LinksForward.Count)
+                    .OrderBy(d => d.LinksForward.Count)
                     .ThenBy (d => d.LinksBackward.Count)
+                    .ThenBy (d => d.Power)
                     .ToList();
             }
         }

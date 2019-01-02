@@ -1,8 +1,141 @@
 @model (string Stats, string Data, string Connections)
+Stats: <br>
 @Html.Raw(@Model.Stats)
---------------------------
-@Html.Raw(@Model.Data)
---------------------------
-@Html.Raw(@Model.Connections)
---------------------------
+<br>
+<br>
+<style>
+  body { margin: 0; }
+  canvas { border: 2px solid greenyellow; }
+</style>
+<canvas id="canvas"></canvas>
+
+<script type="text/javascript">
+  const canvas = document.getElementById('canvas');
+  let ctx = canvas.getContext('2d');
+    // Data
+  let words = [
+    @Html.Raw(@Model.Data)
+  ];
+
+  let connections = [
+    @Html.Raw(@Model.Connections)
+  ];
+
+  const x_padding = 200;
+  const y_padding = 300;
+  const margin = 150;
+  const font = 24;
+  const c = 6 ;
+  var height = 3600;
+  var width = 13000;
+  let max = 0;
+  for(let i = 0; i < words.length; i++) {
+    const list = words[i];
+    let j = getRowSize(list.map(entry => entry.value));
+    if(j > max)
+      max = j
+  }
+  width = max;
+  height = words.length * (2 * y_padding + font / 2) - (y_padding - 10) + 2 * margin;
+  canvas.width = width;
+  canvas.height = height;
+  ctx.font = `${font}px`;
+  // ctx.fillStyle = 'red';
+  ctx.strokeStyle = 'red';
+  ctx.lineWidth = 3;
+
+  // Make calculations
+  for (let i = 0; i < words.length; i++) {
+    const list = words[i];
+    let rowMargin = getRowMargin(list.map(entry => entry.value));
+    let last = 0;
+    for (let j = 0; j < list.length; j++) {
+      let entry = list[j];
+      let w = measureText(entry.value, font);
+      entry.xFrom = rowMargin + j * x_padding + last;
+      entry.xTo = entry.xFrom + w;
+      entry.yFrom = (words.length - i) * (2 * y_padding + font / 2) - (y_padding - 10);
+      entry.yTo = entry.yFrom - font / 2;
+      last += w;
+      list[j] = entry;
+    }
+  }
+
+  // Draw words
+  for (let i = 0; i < words.length; i++) {
+    for (let j = 0; j < words[i].length; j++) {
+      let entry = words[i][j];
+      ctx.fillText(entry.value, entry.xFrom, entry.yFrom);
+    }
+  }
+
+  // Draw boxes
+  for (let i = 0; i < words.length; i++) {
+    for (let j = 0; j < words[i].length; j++) {
+      let entry = words[i][j];
+      ctx.strokeStyle = 'green';
+      ctx.beginPath();
+      ctx.moveTo(entry.xFrom - c, entry.yFrom + c);
+      ctx.lineTo(entry.xTo + c, entry.yFrom + c);
+      ctx.lineTo(entry.xTo + c, entry.yTo - c);
+      ctx.lineTo(entry.xFrom - c, entry.yTo - c);
+      ctx.lineTo(entry.xFrom - c, entry.yFrom + c);
+      ctx.stroke();
+    }
+  }
+
+  // Draw connections
+  for (let i = 0; i < connections.length; i++) {
+    try {
+      const conn = connections[i];
+      let from = words[conn.iFrom][conn.jFrom];
+      let to = words[conn.iTo][conn.jTo];
+      var xFrom = (from.xFrom + from.xTo) / 2;
+      var yFrom = from.yTo - c;
+      var xTo = (to.xFrom + to.xTo) / 2;
+      var yTo = to.yFrom + c;
+      drawConnection(xFrom, yFrom, xTo, yTo);
+    } catch (error) {
+      console.error(error);
+      console.log(i);
+      console.log(connections.length);
+      console.log(connections[i]);
+      console.warn(conn);
+      console.warn(conn.iTo);
+      console.warn(conn.jTo);
+    }
+  }
+
+
+  function measureText(string, font) {
+    let s = Math.round(ctx.measureText(string).width);
+    // console.log(`Size of ${string}: ${s}`);
+    return s;
+  }
+
+  function getRowMargin(strings) {
+    let size = x_padding * (strings.length - 1);
+    console.log(`X_Padding size: ${size}`);
+    strings.forEach((value) => size += measureText(value, font));
+    console.log(`Total size: ${size}`);
+    return (width - size) / 2;
+  }
+
+  function getRowSize(strings) {
+    let size = x_padding * (strings.length - 1);
+    console.log(`__ __Padding size: ${size}`);
+    strings.forEach((value) => size += measureText(value, font));
+    size += 2 * margin;
+    console.log(`__ __Total size: ${size}`);
+    return size;
+  }
+
+  function drawConnection(xFrom, yFrom, xTo, yTo) {
+    ctx.strokeStyle = 'red';
+    ctx.beginPath();
+    ctx.moveTo(xFrom, yFrom);
+    ctx.lineTo(xTo, yTo);
+    ctx.stroke();
+  }
+</script>
 <a asp-action="Index">Return to Home</a>
