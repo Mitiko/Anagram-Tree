@@ -7,31 +7,13 @@ using Anagram_Tree.Models;
 
 namespace Words
 {
-    class DatabaseScraper
+    public static class DatabaseScraper
     {
-        static async Task Search(string[] args)
+        static async Task<List<List<Data>>> Search(string word)
         {
             #region Setup
-            var word = "";
             var alphabet = "абвгдежзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ-".ToList();
             Console.WriteLine($"Alpabet letter count: {alphabet.Count}");
-            #endregion
-
-            #region Argument sanity check
-            if(args.Length < 1)
-            {
-                Console.WriteLine("Provide a base word to search for: ");
-                word = Console.ReadLine();
-            }
-            else if(args.Length > 1)
-            {
-                Console.WriteLine("[WARNING] Only first argument will be used!");
-                word = args[0];
-            }
-            else
-            {
-                word = args[0];
-            }
             #endregion
 
             #region Query generation
@@ -57,52 +39,40 @@ namespace Words
                     .ToListAsync();
 
                 Console.WriteLine($"[results-{i}] {results.Count}");
-                foreach (var result in results)
-                {
-                    if(result.SanityCheck(word))
-                    {
-                        sum++;
-                    }
-                }
                 sum += results.Count(r => r.SanityCheck(word));
                 data.Add(results.Where(r => r.SanityCheck(word)).Select(r => r.ToData()).ToList());
             }
 
             Console.WriteLine($"TORAL WORD COUNT: {sum}");
-            #endregion
-
-            #region Connections statistics
-            int connections = 0;
-            SetConnection(ref data, ref connections);
-
-            Order(ref data);
-
-            PrintStatistics(ref data, ref connections);
-
-            Console.WriteLine("-------------------------------------------------------------------------------");
-
-            // PrintDataJson(ref data);
-            PrintAllWords(ref data);
-            // Console.WriteLine("-------------------------------------------------------------------------------");
-
-            // PrintConnectionsJson(ref data, ref connections);
+            return data;
             #endregion
         }
 
-        private static void PrintAllWords(ref List<List<Data>> data)
+        public static string PrintAllWords(ref List<List<Data>> data)
         {
+            string result = "";
             for (int level = 2; level < data.Count; level++)
             {
-                Console.WriteLine($"------------------------------------------level {level} ------------------------------------------");
+                result += $"------------------------------------------level {level} ------------------------------------------\n";
                 foreach (var d in data[level])
                 {
-                    Console.WriteLine($"(power: {d.Power}) {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})");
+                    result += $"(power: {d.Power}) {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})\n";
                 }
             }
+            return result;
         }
 
-        private static void PrintConnectionsJson(ref List<List<Data>> data, ref int connections)
+        public static int SetupPrinting(ref List<List<Data>> data)
         {
+            int connections = 0;
+            SetConnection(ref data, ref connections);
+            Order(ref data);
+            return connections;
+        }
+
+        public static string PrintConnectionsJson(ref List<List<Data>> data, ref int connections)
+        {
+            string result = "";
             var connCount = 0;
             for (int i = 0; i < data.Count; i++)
             {
@@ -116,44 +86,48 @@ namespace Words
                         var next = d.LinksForward[k];
                         var jn = data[i + 1].IndexOf(next);
 
-                        Console.Write($"{{ iFrom: {d.Level - 2}, jFrom: {j}, iTo: {next.Level - 2}, jTo: {jn} }}");
+                        result += $"{{ iFrom: {d.Level - 2}, jFrom: {j}, iTo: {next.Level - 2}, jTo: {jn} }}";
                         connCount++;
                         if(connCount == connections)
-                            Console.WriteLine("");
+                            result += "\n";
                         else
-                            Console.WriteLine(",");
+                            result += ",\n";
                     }
                 }
             }
+            return result;
         }
 
-        private static void PrintDataJson(ref List<List<Data>> data)
+        public static string PrintDataJson(ref List<List<Data>> data)
         {
+            string result = "";
             for (int i = 0; i < data.Count; i++)
             {
                 var list = data[i];
 
                 if(list.Count > 0)
-                    Console.WriteLine("[");
+                    result += "[\n";
 
                 for (int j = 0; j < list.Count; j++)
                 {
-                    Console.Write($"    {{ value: '{list[j].Power}-{list[j].Value}', xFrom: 0, yFrom: 0, xTo: 0, yTo: 0 }}");
+                    result += $"    {{ value: '{list[j].Power}-{list[j].Value}', xFrom: 0, yFrom: 0, xTo: 0, yTo: 0 }}";
                     if(j == list.Count - 1)
-                        Console.WriteLine("");
+                        result += "\n";
                     else
-                        Console.WriteLine(",");
+                        result += ",\n";
                 }
 
                 if(i != data.Count - 1 && list.Count > 0)
-                    Console.WriteLine("],");
+                    result += "],\n";
                 else if(list.Count > 0)
-                    Console.WriteLine("]");
+                    result += "]\n";
             }
+            return result;
         }
 
-        private static void PrintStatistics(ref List<List<Data>> data, ref int connections)
+        public static string PrintStatistics(ref List<List<Data>> data, ref int connections)
         {
+            string result = "";
             var maxConn = 0;
             var minConn = int.MaxValue;
             var highestPower = 1;
@@ -179,27 +153,28 @@ namespace Words
             }
             averageConn /= count;
             averagePower /= count;
-            Console.WriteLine($"TOTAL CONNECTIONS COUNT: {connections}");
-            Console.WriteLine($"MAX CONNECTIONS: {maxConn}");
-            Console.WriteLine($"MIN CONNECTIONS: {minConn}");
-            Console.WriteLine($"AVERAGE CONNECTIONS: {averageConn}");
-            Console.WriteLine($"HIGHEST POWER: {highestPower}");
-            Console.WriteLine($"AVERAGE POWER: {averagePower}");
+            result += $"TOTAL CONNECTIONS COUNT: {connections}\n";
+            result += $"MAX CONNECTIONS: {maxConn}\n";
+            result += $"MIN CONNECTIONS: {minConn}\n";
+            result += $"AVERAGE CONNECTIONS: {averageConn}\n";
+            result += $"HIGHEST POWER: {highestPower}\n";
+            result += $"AVERAGE POWER: {averagePower}\n";
             bool minConnHasPassed = false;
             foreach (var list in data)
             {
                 foreach (var d in list)
                 {
                     if(d.LinksForward.Count == maxConn)
-                        Console.WriteLine($"Max connections word: {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})");
+                        result += $"Max connections word: {d.Value} => ({string.Join(", ", d.LinksForward.Select(n => n.Value))})\n";
 
                     if(d.LinksForward.Count == minConn && !minConnHasPassed)
                     {
-                        Console.WriteLine($"Min connections word: {d.Value}");
+                        result += $"Min connections word: {d.Value}\n";
                         minConnHasPassed = true;
                     }
                 }
             }
+            return result;
         }
 
         private static void Order(ref List<List<Data>> data)
