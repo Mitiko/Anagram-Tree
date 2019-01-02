@@ -9,7 +9,7 @@ namespace Anagram_Tree
 {
     public static class DatabaseScraper
     {
-        public static async Task<(List<List<Data>> datas, string stats)> Search(string word)
+        public static async Task<(List<List<Data>> datas, string stats)> Search(string word, string connectionString)
         {
             #region Setup
             var alphabet = "абвгдежзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ-".ToList();
@@ -17,7 +17,9 @@ namespace Anagram_Tree
             #endregion
 
             #region Query generation
-            var _applicationContext = new ApplicationContext();
+            var builder = new DbContextOptionsBuilder<ApplicationContext>();
+            builder.UseNpgsql(connectionString);
+            var _applicationContext = new ApplicationContext(builder.Options);
             var data = new List<List<Data>>();
             alphabet = alphabet.Where(c => !word.Contains(c)).ToList();
             stats += $"Alphabet: {string.Join("", alphabet)}<br><br>";

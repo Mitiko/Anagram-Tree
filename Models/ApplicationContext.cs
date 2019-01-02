@@ -15,15 +15,7 @@ namespace Anagram_Tree.Models
         {
         }
 
-        public virtual DbSet<Word> Word { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;User Id=admin;Password=god;");
-            }
-        }
+        public DbSet<Word> Word { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
