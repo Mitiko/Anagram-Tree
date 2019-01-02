@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Anagram_Tree.Models;
 
-namespace Words
+namespace Anagram_Tree
 {
     public static class DatabaseScraper
     {
-        static async Task<(List<List<Data>> datas, string stats)> Search(string word)
+        public static async Task<(List<List<Data>> datas, string stats)> Search(string word)
         {
             #region Setup
             var alphabet = "абвгдежзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ-".ToList();
@@ -47,7 +47,7 @@ namespace Words
             #endregion
         }
 
-        public static string PrintAllWords(ref List<List<Data>> data)
+        public static string PrintAllWords(List<List<Data>> data)
         {
             string result = "";
             for (int level = 2; level < data.Count; level++)
@@ -61,7 +61,7 @@ namespace Words
             return result;
         }
 
-        public static int SetupPrinting(ref List<List<Data>> data)
+        public static int Setup(ref List<List<Data>> data)
         {
             int connections = 0;
             SetConnection(ref data, ref connections);
@@ -69,7 +69,7 @@ namespace Words
             return connections;
         }
 
-        public static string PrintConnectionsJson(ref List<List<Data>> data, ref int connections)
+        public static string PrintConnectionsJson(List<List<Data>> data, int connections)
         {
             string result = "";
             var connCount = 0;
@@ -97,7 +97,7 @@ namespace Words
             return result;
         }
 
-        public static string PrintDataJson(ref List<List<Data>> data)
+        public static string PrintDataJson(List<List<Data>> data)
         {
             string result = "";
             for (int i = 0; i < data.Count; i++)
@@ -124,7 +124,7 @@ namespace Words
             return result;
         }
 
-        public static string PrintStatistics(ref List<List<Data>> data, ref int connections)
+        public static string PrintStatistics(List<List<Data>> data, int connections)
         {
             string result = "";
             var maxConn = 0;
