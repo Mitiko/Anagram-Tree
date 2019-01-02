@@ -9,19 +9,18 @@ namespace Words
 {
     public static class DatabaseScraper
     {
-        static async Task<List<List<Data>>> Search(string word)
+        static async Task<(List<List<Data>> datas, string stats)> Search(string word)
         {
             #region Setup
             var alphabet = "абвгдежзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ-".ToList();
-            Console.WriteLine($"Alpabet letter count: {alphabet.Count}");
+            string stats = $"Alpabet letter count: {alphabet.Count}\n";
             #endregion
 
             #region Query generation
             var _applicationContext = new ApplicationContext();
             var data = new List<List<Data>>();
             alphabet = alphabet.Where(c => !word.Contains(c)).ToList();
-            Console.WriteLine($"Alphabet: {string.Join("", alphabet)}");
-            Console.WriteLine();
+            stats += $"Alphabet: {string.Join("", alphabet)}\n\n";
             var sum = 0;
             #endregion
 
@@ -38,13 +37,13 @@ namespace Words
                     .Select(w => w.FirstOrDefault())
                     .ToListAsync();
 
-                Console.WriteLine($"[results-{i}] {results.Count}");
+                stats += $"[results-{i}] {results.Count}\n";
                 sum += results.Count(r => r.SanityCheck(word));
                 data.Add(results.Where(r => r.SanityCheck(word)).Select(r => r.ToData()).ToList());
             }
 
-            Console.WriteLine($"TORAL WORD COUNT: {sum}");
-            return data;
+            stats += $"TORAL WORD COUNT: {sum}\n";
+            return (data, stats);
             #endregion
         }
 
