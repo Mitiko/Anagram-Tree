@@ -32,6 +32,9 @@ namespace Anagram_Tree.Models
             var letters = d2.Value.Distinct().ToList();
             foreach (var l in letters)
             {
+                if(!dict.ContainsKey(l))
+                    return false;
+
                 if(!(d2.Value.Count(x => x == l) <= dict[l]))
                     return false;
             }
