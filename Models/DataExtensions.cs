@@ -54,6 +54,9 @@ namespace Anagram_Tree.Models
             var letters = word.Name.Distinct().ToList();
             foreach (var l in letters)
             {
+                if(!dict.ContainsKey(l))
+                    return false;
+
                 if(!(word.Name.Count(x => x == l) <= dict[l]))
                     return false;
             }
