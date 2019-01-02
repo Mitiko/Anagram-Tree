@@ -22,12 +22,20 @@ namespace Anagram_Tree.Models
         public static bool Contains(this Data d1, Data d2)
         {
             // d1 is bigger
-            var v1 = d1.Value.ToList();
-            foreach (var l2 in d2.Value)
+            // Setup
+            var w = d1.Value.Distinct().ToList();
+            var dict = new Dictionary<char, int>();
+            w.Sort();
+            w.ForEach(l => dict.Add(l, d1.Value.Count(x => x == l)));
+
+            // Execute
+            var letters = d2.Value.Distinct().ToList();
+            foreach (var l in letters)
             {
-                if(!v1.Contains(l2))
+                if(!(d2.Value.Count(x => x == l) <= dict[l]))
                     return false;
             }
+
             return true;
         }
 
