@@ -26,6 +26,11 @@ namespace Anagram_Tree
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHsts();
+            app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+
             app.UseMvcWithDefaultRoute();
         }
     }
